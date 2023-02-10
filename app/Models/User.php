@@ -18,9 +18,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'username',
         'password',
+        'user_id',
+        'account_type',
     ];
 
     /**
@@ -30,15 +31,21 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function scopeIsAdmin()
+    {
+        return $this->account_type == 1;
+    }
+
+    public function getName()
+    {
+        if ($this->account_type == 1) {
+            return Doctor::find($this->user_id)->name;
+        } elseif ( $this->account_type == 2) {
+            return Students::find($this->user_id)->name;
+        }
+
+        return Faculties::find($this->user_id)->name;
+    }
 }
